@@ -1,5 +1,7 @@
-#get_ipython().system('pip install splinter')
 
+
+
+#get_ipython().system('pip install splinter')
 
 
 # Dependencies
@@ -28,6 +30,7 @@ def init_browser():
 
 
 
+
 # Initialize PyMongo to work with MongoDBs
 conn = 'mongodb://localhost:27017'
 client = pymongo.MongoClient(conn)
@@ -43,61 +46,79 @@ collection = db.misson_to_mars
 
 
 
+def mars_news():
+    title_text = []
+    url = 'https://mars.nasa.gov/news/'
+    browser.visit(url)
+    # Retrieve page with the requests module
+    response = requests.get(url)
+    # Create a Beautiful Soup object
+    soup = bs(response.text, 'html.parser')
+    news_title = soup.title.text
+    title_text.append(news_title)
+    #print(title_text)
+    return (title_text)
+news_title = mars_news()
+print(news_title)
 
-#def mars_news():
-title_text = []
-para_text = []
-url = 'https://mars.nasa.gov/news/'
-browser.visit(url)
-# Retrieve page with the requests module
-response = requests.get(url)
-# Create a Beautiful Soup object
-soup = bs(response.text, 'html.parser')
-news_title = soup.title.text
-title_text.append(news_title)
-print(title_text)
-# Print all paragraph texts
-paras = soup.find_all(class_="content_title")
-for para in paras:
-    ptext = para.find('_self')
-    ptext = para.text.strip()
-    para_text.append(ptext)
-    print(para_text)
-    #return (title_text ,para_text)
-#test = mars_news()
-#print(test)
+
+
+
+def mars_para_text():
+    para_text = []
+    url = 'https://mars.nasa.gov/news/'
+    browser.visit(url)
+    # Retrieve page with the requests module
+    response = requests.get(url)
+    # Create a Beautiful Soup object
+    soup = bs(response.text, 'html.parser')
+    # Print all paragraph texts
+    paras = soup.find_all(class_="content_title")
+    for para in paras:
+        ptext = para.find('_self')
+        ptext = para.text.strip()
+        para_text.append(ptext)
+        print(para_text)
+    return (para_text)
+news_text = mars_para_text()
+print(news_text)
 
 
 # # JPL Mars Space Images - Featured Image
 
+
+
 from splinter import Browser
 from bs4 import BeautifulSoup
 import time
-#def Mars_Featured_image():
-browser = Browser('chrome', headless=False)
-url = 'https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars'
-browser.visit(url)
-html = browser.html
-# create a soup object from the html
-img_soup = BeautifulSoup(html, "html.parser")
-featured_image_url= 'https://www.jpl.nasa.gov/' + img_soup.find(class_="button fancybox")['data-fancybox-href']
+def Mars_Featured_image():
+    browser = Browser('chrome', headless=False)
+    url = 'https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars'
+    browser.visit(url)
+    html = browser.html
+    # create a soup object from the html
+    img_soup = BeautifulSoup(html, "html.parser")
+    featured_image_url= 'https://www.jpl.nasa.gov/' + img_soup.find(class_="button fancybox")['data-fancybox-href']
+
+    return (featured_image_url)
+featured_image_url = Mars_Featured_image()
 print(featured_image_url)
-    #return (featured_image_url)
-#test = Mars_Featured_image()
-#print(test)
+
 
 # # Mars Weather - get latest Mars weather tweet
 
-# def Mars_latest_tweet():
-url = "https://twitter.com/MarsWxReport?lang=en"
-response = requests.get(url)
-soup = bs(response.text, 'lxml') 
-latest_tweet = soup.title.text
-mars_weather = soup.find(class_="TweetTextSize TweetTextSize--normal js-tweet-text tweet-text")
+
+
+def Mars_latest_tweet():
+    url = "https://twitter.com/MarsWxReport?lang=en"
+    response = requests.get(url)
+    soup = bs(response.text, 'lxml') 
+    latest_tweet = soup.title.text
+    mars_weather = soup.find(class_="TweetTextSize TweetTextSize--normal js-tweet-text tweet-text")
+    #print(mars_weather)
+    return (mars_weather)
+mars_weather=Mars_latest_tweet()
 print(mars_weather)
-#return (mars_weather)
-#test=Mars_latest_tweet()
-#print(test)
 
 
 # # Mars Facts
@@ -106,28 +127,29 @@ print(mars_weather)
 
 
 
-#def mars_Facts():
-import pandas as pd
-url = "http://space-facts.com/mars/"
-response = requests.get(url)
-soup = bs(response.text, 'html.parser')
-type(soup)
-tables = pd.read_html(url)
-tables
-df = tables[0]
-df.columns = ['Description' ,'Value']
-df.head()
-#Use Pandas to convert the data to a HTML table string.
-html_table = df.to_html()
-html_table
-facts_table = html_table.replace('\n', '')
-facts_table
-type(facts_table)
-#lets save this table to a file
-df.to_html('table.html')
-get_ipython().system('open table.html')
-    #return()
-#test = mars_Facts()
+def mars_Facts():
+    import pandas as pd
+    url = "http://space-facts.com/mars/"
+    response = requests.get(url)
+    soup = bs(response.text, 'html.parser')
+    type(soup)
+    tables = pd.read_html(url)
+    tables
+    df = tables[0]
+    df.columns = ['Description' ,'Value']
+    df.head()
+    #Use Pandas to convert the data to a HTML table string.
+    html_table = df.to_html()
+    html_table
+    facts_table = html_table.replace('\n', '')
+    facts_table
+    type(facts_table)
+    #lets save this table to a file
+    df.to_html('table.html')
+    get_ipython().system('open table.html')
+    return(facts_table)
+mars_facts = mars_Facts()
+print(mars_facts)
 
 
 # # Mars Hemisperes
@@ -136,6 +158,8 @@ get_ipython().system('open table.html')
 # You will need to click each of the links to the hemispheres in order to find the image url to the full resolution image.
 # Save both the image url string for the full resolution hemipshere image, and the Hemisphere title containing the hemisphere name. Use a Python dictionary to store the data using the keys img_url and title.
 # Append the dictionary with the image url string and the hemisphere title to a list. This list will contain one dictionary for each hemisphere.
+
+
 
 
 # URL of page to be scraped
@@ -183,23 +207,24 @@ print(hemisphere_image_urls)
 print("=====================================================")
 
 
+
+
+
 hemisphere_image_urls
 
+
 # # Step 2 - MongoDB and Flask Application
+
+
 
 # Create a dictionary with all of the above scraped variables 
 mars_scrape_data = {'hemispheres': hemisphere_image_urls,
                     'facts': facts_table,
                     'mars_weather': mars_weather,
                     "featured_image_url": featured_image_url,
-                    'news_title': title_text,
-                    'news_text': para_text}
+                    'news_title': news_title,
+                    'news_text': news_text}
 
 mars_scrape_data
  
-type(mars_scrape_data)
-
-mars_scrape_data["news_text"]
-
-mars_scrape_data["hemispheres"][-1]
 

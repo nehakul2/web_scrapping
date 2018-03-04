@@ -8,6 +8,7 @@ Created on Wed Feb 28 18:39:05 2018
 
 from flask import Flask, render_template, jsonify, redirect
 import pymongo
+from pymongo import MongoClient
 import mission_to_mars
 
 app = Flask(__name__)
@@ -26,7 +27,7 @@ collection = db.missionToMars
 
 @app.route('/')
 def index():
-    mission = db.missionToMars.find_one()
+    mission = mongo.db.missionToMars.find_one()
     print(mission)
     return render_template('index.html', mission=mission)
 
@@ -34,13 +35,13 @@ def index():
 
 @app.route('/scrape')
 def scrape():
-    mission = db.missionToMars
+    mission = mongo.db.missionToMars
     data = mission_mars.scrape()
-    print(data)
+    #print("this is data in scrape", data)
     mission.update({}, data, upsert=True)
-    return redirect("http://localhost:5000/", code=302)
+    return redirect("http://localhost:5010/", code=302)
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True , port=5010)
     
